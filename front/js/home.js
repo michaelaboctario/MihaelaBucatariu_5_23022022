@@ -38,7 +38,9 @@ function addProductsList() {
       });
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
+/* document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
     addProductsList();
-});
+}); */
+
+window.onload = addProductsList();
