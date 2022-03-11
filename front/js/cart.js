@@ -78,6 +78,7 @@ function showCart() {
     document.getElementById("totalQuantity").innerHTML = totalQuantity;
     document.getElementById("totalPrice").innerHTML = totalPrice;
     document.querySelectorAll(".itemQuantity").forEach(quantityInput=>quantityInput.addEventListener("change", quantityChangeHandler));
+    document.querySelectorAll(".deleteItem").forEach(deleteButton=>deleteButton.addEventListener("click", deleteProductHandler));
 }
 
 function updateProductCart(productId, color, newQuantity) {
@@ -86,6 +87,16 @@ function updateProductCart(productId, color, newQuantity) {
     if ( indexProduct >= 0)
       oldCart[indexProduct].quantity = Number(newQuantity);
     localStorage.setItem("Kanap-OC", JSON.stringify(oldCart));
+}
+
+function deleteProductFromCart(productIdToDelete, colorToDelete) {
+    const existingCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
+    const newCart = existingCart.filter(product=>{ 
+        const {productId, color} = product;
+        return !(productId === productIdToDelete && color === colorToDelete);
+    });
+   
+    localStorage.setItem("Kanap-OC", JSON.stringify(newCart));
 }
 
 function updateTotalQuantity() {
@@ -123,6 +134,16 @@ function quantityChangeHandler() {
     //console.log(parentArticle)
     const newQuantity = event.target.value;
     updateProductCart(parentArticle.dataset.id, parentArticle.dataset.color, newQuantity);
+    updateTotalQuantity();
+    updateTotalPrice();
+}
+
+function deleteProductHandler() {
+    console.log("deleteProductHandler");
+    const parentArticle = this.closest(".cart__item");
+    console.log(parentArticle)
+    deleteProductFromCart(parentArticle.dataset.id, parentArticle.dataset.color);
+    parentArticle.remove();
     updateTotalQuantity();
     updateTotalPrice();
 }
