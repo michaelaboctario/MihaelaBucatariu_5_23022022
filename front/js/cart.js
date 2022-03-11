@@ -129,7 +129,7 @@ function updateTotalPrice() {
 }
 
 //to do : test if newValue is not the same as the old one 
-function quantityChangeHandler() {
+function quantityChangeHandler(event) {
     const parentArticle = this.closest(".cart__item");
     //console.log(parentArticle)
     const newQuantity = event.target.value;
