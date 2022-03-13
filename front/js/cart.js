@@ -1,9 +1,9 @@
-import { host } from './config.js';
+import { host} from './config.js';
 
 let allProducts=[];
-//let cartProducts=[];
 let totalPrice=0;
 let totalQuantity=0;
+//let cartProducts=[];
 
 function getProductsList() {
     fetch(`${host}/api/products`)
@@ -139,13 +139,148 @@ function quantityChangeHandler(event) {
 }
 
 function deleteProductHandler() {
-    console.log("deleteProductHandler");
+    //console.log("deleteProductHandler");
     const parentArticle = this.closest(".cart__item");
-    console.log(parentArticle)
+    //console.log(parentArticle)
     deleteProductFromCart(parentArticle.dataset.id, parentArticle.dataset.color);
     parentArticle.remove();
     updateTotalQuantity();
     updateTotalPrice();
+}
+
+const form  = document.getElementsByTagName("form")[0];
+const emailInput = document.getElementById("email");
+const errorEmail = document.getElementById("emailErrorMsg");
+const firstNameInput = document.getElementById("firstName");
+const errorFirstName = document.getElementById("firstNameErrorMsg");
+const lastNameInput = document.getElementById("lastName");
+const errorLastName = document.getElementById("lastNameErrorMsg");
+const addressInput = document.getElementById("address");
+const errorAddress = document.getElementById("addressErrorMsg");
+const cityInput = document.getElementById("city");
+const errorCity = document.getElementById("cityErrorMsg");
+
+//regexp Email
+//const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+function validateName(name) {
+  //from https://grafikart.fr/forum/29810
+  //const nameRegexp = /^[A-Z][\p{L}-]*$/;
+  //Loïc, Laëtitia
+  const nameRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
+  return nameRegexp.test(name);
+}
+
+function validateCity(city) {
+  const cityRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
+  return cityRegexp.test(city);
+}
+
+function validateAddress(address) {
+  const addressRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
+  return addressRegexp.test(address);
+}
+
+emailInput.addEventListener("input", function (event) {
+    if (emailInput.validity.valid) {
+      errorEmail.innerHTML = ""; 
+    }
+    else {
+        errorEmail.innerHTML = "L'adresse e-mail n'est pas correcte!";
+    }
+  }, false);
+
+
+  firstNameInput.addEventListener("input", function (event) {
+    if (validateName(firstNameInput.value)) {
+      errorFirstName.innerHTML = ""; 
+    }
+    else {
+      errorFirstName.innerHTML = "Le prénom n'est pas correct!";
+    }
+  }, false);
+
+  lastNameInput.addEventListener("input", function (event) {
+    if (validateName(lastNameInput.value)) {
+      errorLastName.innerHTML = ""; 
+    }
+    else {
+      errorLastName.innerHTML = "Le nom n'est pas correct!";
+    }
+  }, false);
+
+  cityInput.addEventListener("input", function (event) {
+    if (validateCity(cityInput.value)) {
+      errorCity.innerHTML = ""; 
+    }
+    else {
+      errorCity.innerHTML = "Le nom de la ville n'est pas correct!";
+    }
+  }, false);
+
+  addressInput.addEventListener("input", function (event) {
+    if (validateAddress(addressInput.value)) {
+      errorAddress.innerHTML = ""; 
+    }
+    else {
+      errorAddress.innerHTML = "L'addresse n'est pas correcte!";
+    }
+  }, false);
+
+function getCartProducts() {
+  const existingCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
+  const idsCart = existingCart.map(product=>{ 
+      const {productId} = product;
+      return productId;
+  });
+   
+  return idsCart;
+}  
+
+form.addEventListener("submit", function (event) {
+    if (!emailInput.validity.valid 
+      || !validateName(firstNameInput.value)
+      || !validateName(lastNameInput.value)
+      || !validateCity(cityInput.value)
+      || !validateAddress(firstNameInput.value)) {    
+    }
+    else {
+      const contact = {
+        firstName: firstNameInput.value,
+        lastName: lastNameInput.value,
+        address: addressInput.value,
+        city: cityInput.value,
+        email: emailInput.value,
+      };
+      const cart = {
+        contact,
+        products: getCartProducts()
+      }
+      console.log(cart);
+      submitCart(cart);
+    }
+    event.preventDefault();
+}, false);
+
+function submitCart(cart) {
+  console.log(JSON.stringify(cart));
+  fetch(`${host}/api/products/order`, {
+    method: "POST",
+    headers: {
+      'Accept': 'application/json', 
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(cart)
+  })
+  .then(function(res) {
+    if (res.ok) {
+      return res.json();
+    }
+  })
+  .then(function(data) {
+    //console.log(data);
+    window.location.replace(`confirmation.html?order=${data.orderId}`);
+  });
 }
 
 window.onload = getProductsList();
