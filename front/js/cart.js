@@ -27,6 +27,16 @@ function getProductsList() {
       });
 }
 
+function formatPrice(price) {
+  return Number(price).toLocaleString("fr-FR", {
+    minimumIntegerDigits: 2,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: true,
+  });
+}
+
+
 function getProduct(productId) {
     return allProducts.find(product => product._id === productId);
 }
@@ -101,7 +111,8 @@ function createItemImgElement(parentElement, cartItem) {
     pColorElement.textContent = color;
     itemContentDescriptionElement.appendChild(pColorElement);
     const pPriceElement = document.createElement("p");
-    pPriceElement.textContent = `${price} €`;
+    const formattedPrice = formatPrice(price); 
+    pPriceElement.textContent = `${formattedPrice} €`;
     itemContentDescriptionElement.appendChild(pPriceElement);
   }
 
@@ -146,7 +157,7 @@ function createItemImgElement(parentElement, cartItem) {
         }     
     });
     document.getElementById("totalQuantity").textContent = totalQuantity;
-    document.getElementById("totalPrice").textContent = totalPrice;
+    document.getElementById("totalPrice").textContent = formatPrice(totalPrice);
     document.querySelectorAll(".itemQuantity").forEach(quantityInput=>quantityInput.addEventListener("change", quantityChangeHandler));
     document.querySelectorAll(".deleteItem").forEach(deleteButton=>deleteButton.addEventListener("click", deleteProductHandler));
 }
@@ -195,7 +206,7 @@ function updateTotalPrice() {
             totalPrice = totalPrice + Number(price)*Number(quantity);
         }
     })
-    document.getElementById("totalPrice").textContent =  `${totalPrice} €`;
+    document.getElementById("totalPrice").textContent =  formatPrice(totalPrice);
 }
 
 //to do : test if newValue is not the same as the old one 
@@ -251,8 +262,8 @@ function validateAddress(address) {
   return addressRegexp.test(address);
 }
 
-emailInput.addEventListener("input", function (event) {
-    if (emailInput.validity.valid) {
+emailInput.addEventListener("change", function (event) {
+    if (!emailInput.value || emailInput.validity.valid) {
       errorEmail.textContent = ""; 
     }
     else {
@@ -261,7 +272,7 @@ emailInput.addEventListener("input", function (event) {
   }, false);
 
 
-  firstNameInput.addEventListener("input", function (event) {
+  firstNameInput.addEventListener("change", function () {
     if (validateName(firstNameInput.value)) {
       errorFirstName.textContent = ""; 
     }
@@ -270,7 +281,7 @@ emailInput.addEventListener("input", function (event) {
     }
   }, false);
 
-  lastNameInput.addEventListener("input", function (event) {
+  lastNameInput.addEventListener("change", function () {
     if (validateName(lastNameInput.value)) {
       errorLastName.textContent = ""; 
     }
@@ -279,7 +290,7 @@ emailInput.addEventListener("input", function (event) {
     }
   }, false);
 
-  cityInput.addEventListener("input", function (event) {
+  cityInput.addEventListener("change", function (event) {
     if (validateCity(cityInput.value)) {
       errorCity.textContent = ""; 
     }
@@ -288,7 +299,7 @@ emailInput.addEventListener("input", function (event) {
     }
   }, false);
 
-  addressInput.addEventListener("input", function (event) {
+  addressInput.addEventListener("change", function (event) {
     if (validateAddress(addressInput.value)) {
       errorAddress.textContent = ""; 
     }
