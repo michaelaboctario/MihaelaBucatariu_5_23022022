@@ -31,7 +31,98 @@ function getProduct(productId) {
     return allProducts.find(product => product._id === productId);
 }
 
-function showCart() {
+// create this HTML
+// <div class="cart__item__content__settings">
+//   <div class="cart__item__content__settings__quantity">
+//     <p>Qté : </p>
+//     <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${quantity}>
+//   </div>
+//   <div class="cart__item__content__settings__delete">
+//     <p class="deleteItem">Supprimer</p>
+//   </div>
+// </div>
+function createItemContentSettingsElement(parentElement, cartItem) {      
+  const {quantity} = cartItem;
+  const settingsElement = document.createElement("div");
+  settingsElement.className = "cart__item__content__settings";
+  parentElement.appendChild(settingsElement);
+  const settingsQuantityElement = document.createElement("div");
+  settingsQuantityElement.className = "cart__item__content__settings__quantity";
+  settingsElement.appendChild(settingsQuantityElement);
+  const pElement = document.createElement("p");
+  pElement.textContent = "Qté : ";
+  settingsQuantityElement.appendChild(pElement);
+  const inputElement = document.createElement("input");
+  inputElement.type = "number";
+  inputElement.className = "itemQuantity";
+  inputElement.setAttribute("name", "itemQuantity");
+  inputElement.setAttribute("min", "1");
+  inputElement.setAttribute("max", "100");
+  inputElement.value = quantity;
+  settingsQuantityElement.appendChild(inputElement);
+
+  const settingsDeleteElement = document.createElement("div");
+  settingsDeleteElement.className = "cart__item__content__settings__delete";
+  settingsElement.appendChild(settingsDeleteElement);
+  const pDeleteElement = document.createElement("p");
+  pDeleteElement.className = "deleteItem";
+  pDeleteElement.textContent = "Supprimer";
+  settingsDeleteElement.appendChild(pDeleteElement);
+}
+
+// <div class="cart__item__img">
+//   <img src=${imageUrl} alt=${altTxt}>
+// </div>
+function createItemImgElement(parentElement, cartItem) {
+  const {imageUrl, altTxt} = cartItem;
+  const itemImgElement = document.createElement("div");
+  itemImgElement.className = "cart__item__img";
+  parentElement.appendChild(itemImgElement);
+  const imgElement = document.createElement("img");
+  imgElement.setAttribute("src", imageUrl);
+  imgElement.setAttribute("alt", altTxt);
+  itemImgElement.appendChild(imgElement);
+}  
+ 
+// <div class="cart__item__content__description">
+//   <h2>${name}</h2>
+//   <p>${color}</p>
+//   <p>${price} €</p>
+// </div>
+  function createItemContentDescriptionElement(parentElement, cartItem) {
+    const {name, color, price} = cartItem;
+    const itemContentDescriptionElement = document.createElement("div");
+    itemContentDescriptionElement.className = "cart__item__content__description";
+    parentElement.appendChild(itemContentDescriptionElement);
+    const h2Element = document.createElement("h2");
+    h2Element.textContent = name;
+    itemContentDescriptionElement.appendChild(h2Element);
+    const pColorElement = document.createElement("p");
+    pColorElement.textContent = color;
+    itemContentDescriptionElement.appendChild(pColorElement);
+    const pPriceElement = document.createElement("p");
+    pPriceElement.textContent = `${price} €`;
+    itemContentDescriptionElement.appendChild(pPriceElement);
+  }
+
+  // <article class="cart__item" data-id="${productId}" data-color="${color}">
+  // </article>
+  function createArticleElement(parentElement, cartItem) {  
+    const {productId, color} = cartItem;
+    const articleElement = document.createElement("article");
+    articleElement.className = "cart__item";
+    parentElement.appendChild(articleElement);
+    articleElement.setAttribute("data-id", productId);
+    articleElement.setAttribute("data-color", color);
+    createItemImgElement(articleElement, cartItem);
+    const itemContentElement = document.createElement("div");
+    itemContentElement.className = "cart__item__content";
+    articleElement.appendChild(itemContentElement);
+    createItemContentDescriptionElement(itemContentElement, cartItem);
+    createItemContentSettingsElement(itemContentElement, cartItem);
+  }
+
+  function showCart() {
     //cartProducts = [];
     totalPrice=0;
     totalQuantity=0;
@@ -45,38 +136,17 @@ function showCart() {
         const {productId, color, quantity} = product;
         const item = allProducts.find(product => product._id === productId);
         //console.log(item);
-        const {name, price, imageUrl, altTxt} = item;
-        const cartItem = {productId, color, quantity, name, price, imageUrl, altTxt};
-        totalQuantity += Number(quantity);
-        totalPrice += Number(quantity)*Number(price);
-
-        const itemContent =
-        `<article class="cart__item" data-id="${productId}" data-color="${color}">
-        <div class="cart__item__img">
-          <img src=${imageUrl} alt=${altTxt}>
-        </div>
-        <div class="cart__item__content">
-          <div class="cart__item__content__description">
-            <h2>${name}</h2>
-            <p>${color}</p>
-            <p>${price} €</p>
-          </div>
-          <div class="cart__item__content__settings">
-            <div class="cart__item__content__settings__quantity">
-              <p>Qté : </p>
-              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${quantity}>
-            </div>
-            <div class="cart__item__content__settings__delete">
-              <p class="deleteItem">Supprimer</p>
-            </div>
-          </div>
-        </div>
-      </article>`
-        cartContent += itemContent;
+        if(item)
+        {
+          const {name, price, imageUrl, altTxt} = item;
+          const cartItem = {productId, color, quantity, name, price, imageUrl, altTxt};
+          totalQuantity += Number(quantity);
+          totalPrice += Number(quantity)*Number(price);
+          createArticleElement(document.getElementById("cart__items"), cartItem);
+        }     
     });
-    document.getElementById("cart__items").innerHTML = cartContent;
-    document.getElementById("totalQuantity").innerHTML = totalQuantity;
-    document.getElementById("totalPrice").innerHTML = totalPrice;
+    document.getElementById("totalQuantity").textContent = totalQuantity;
+    document.getElementById("totalPrice").textContent = totalPrice;
     document.querySelectorAll(".itemQuantity").forEach(quantityInput=>quantityInput.addEventListener("change", quantityChangeHandler));
     document.querySelectorAll(".deleteItem").forEach(deleteButton=>deleteButton.addEventListener("click", deleteProductHandler));
 }
@@ -111,7 +181,7 @@ function updateTotalQuantity() {
            
     }
     //console.log(totalQuantity);
-    document.getElementById("totalQuantity").innerHTML = totalQuantity;
+    document.getElementById("totalQuantity").textContent = totalQuantity;
 }
 
 function updateTotalPrice() {
@@ -125,7 +195,7 @@ function updateTotalPrice() {
             totalPrice = totalPrice + Number(price)*Number(quantity);
         }
     })
-    document.getElementById("totalPrice").innerHTML = totalPrice;
+    document.getElementById("totalPrice").textContent =  `${totalPrice} €`;
 }
 
 //to do : test if newValue is not the same as the old one 
@@ -183,47 +253,47 @@ function validateAddress(address) {
 
 emailInput.addEventListener("input", function (event) {
     if (emailInput.validity.valid) {
-      errorEmail.innerHTML = ""; 
+      errorEmail.textContent = ""; 
     }
     else {
-        errorEmail.innerHTML = "L'adresse e-mail n'est pas correcte!";
+        errorEmail.textContent = "L'adresse e-mail n'est pas correcte!";
     }
   }, false);
 
 
   firstNameInput.addEventListener("input", function (event) {
     if (validateName(firstNameInput.value)) {
-      errorFirstName.innerHTML = ""; 
+      errorFirstName.textContent = ""; 
     }
     else {
-      errorFirstName.innerHTML = "Le prénom n'est pas correct!";
+      errorFirstName.textContent = "Le prénom n'est pas correct!";
     }
   }, false);
 
   lastNameInput.addEventListener("input", function (event) {
     if (validateName(lastNameInput.value)) {
-      errorLastName.innerHTML = ""; 
+      errorLastName.textContent = ""; 
     }
     else {
-      errorLastName.innerHTML = "Le nom n'est pas correct!";
+      errorLastName.textContent = "Le nom n'est pas correct!";
     }
   }, false);
 
   cityInput.addEventListener("input", function (event) {
     if (validateCity(cityInput.value)) {
-      errorCity.innerHTML = ""; 
+      errorCity.textContent = ""; 
     }
     else {
-      errorCity.innerHTML = "Le nom de la ville n'est pas correct!";
+      errorCity.textContent = "Le nom de la ville n'est pas correct!";
     }
   }, false);
 
   addressInput.addEventListener("input", function (event) {
     if (validateAddress(addressInput.value)) {
-      errorAddress.innerHTML = ""; 
+      errorAddress.textContent = ""; 
     }
     else {
-      errorAddress.innerHTML = "L'addresse n'est pas correcte!";
+      errorAddress.textContent = "L'addresse n'est pas correcte!";
     }
   }, false);
 
