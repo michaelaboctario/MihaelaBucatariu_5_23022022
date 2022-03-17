@@ -1,5 +1,6 @@
 import { host } from './config.js';
 
+//construit le DOM de la page d'accueil, a partir des produits déjà existent en format json récupères précédemment 
 function showAllProducts(products) {
   const itemsElement = document.getElementById("items");
   for(let product of products) {
@@ -25,10 +26,9 @@ function showAllProducts(products) {
 
       itemsElement.appendChild(productElement);
   }
-  
-  
 }
 
+//récupère tous les produits depuis le backend avec une requête Get
 function addProductsList() {
     fetch(`${host}/api/products`)
     .then(function(response) {

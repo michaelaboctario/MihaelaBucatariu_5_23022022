@@ -1,6 +1,6 @@
 import { host } from './config.js';
-const cart=[];
 
+// récupère l'id du produit, à partir de l'Url du navigateur 
 function getProductId()
 {
   let productId;
@@ -13,6 +13,7 @@ function getProductId()
   return productId;
 }
 
+// construit le DOM d'un Produit, envoyé en paramètre, en format json 
 function showOneProduct(product) {     
   //console.log(product);
   const {_id, price, colors, imageUrl, name, description, altTxt} = product; 
@@ -43,6 +44,9 @@ function showOneProduct(product) {
   }; 
 }
 
+// ajout d'un Produit dans le Panier, en respectant la quantité et la couleur sélectionnées 
+// si le même Produit se trouve déjà dans le Panier (même id et même couleur), calcule la nouvelle quantité, ne duplique pas le même Produit 
+// sauvegarde le panier dans le localStorage 
 function addToCart() {
     const productId = getProductId();
     const quantity = Number(document.getElementById("quantity").value);
@@ -60,6 +64,7 @@ function addToCart() {
     localStorage.setItem("Kanap-OC", JSON.stringify(oldCart));
 }
 
+// récupère le produit avec l'id passé en paramètre, et construit la DOM de la page Produit pour ce Produit 
 function addOneProduct(productId) {
     fetch(`${host}/api/products/${productId}`)
     .then(function(response) {
@@ -81,6 +86,7 @@ function addOneProduct(productId) {
       });
 }
 
+// construit la page Produit
 window.onload = function() {
   console.log(host);
   const productId = getProductId();
@@ -89,6 +95,6 @@ window.onload = function() {
   else {
     console.log("Je n'ai pas trouvé l'id du produit !");
     const elem = document.getElementById("item");
-    elem.innerHTML="Id du produit pas trouvé !";
+    elem.textContent="Id du produit pas trouvé !";
   }
 }

@@ -1,9 +1,6 @@
 import { host} from './config.js';
 
 let allProducts=[];
-let totalPrice=0;
-let totalQuantity=0;
-//let cartProducts=[];
 
 function getProductsList() {
     fetch(`${host}/api/products`)
@@ -27,6 +24,7 @@ function getProductsList() {
       });
 }
 
+// formate un numéro comme un prix en français (ex: 1000,00) 
 function formatPrice(price) {
   return Number(price).toLocaleString("fr-FR", {
     minimumIntegerDigits: 2,
@@ -36,12 +34,12 @@ function formatPrice(price) {
   });
 }
 
-
+// retrouve le produit avec l'id spécifié en paramètre 
 function getProduct(productId) {
     return allProducts.find(product => product._id === productId);
 }
 
-// create this HTML
+// construit la partie du DOM qui suit: (le Node "div" avec class="cart__item__content__settings")
 // <div class="cart__item__content__settings">
 //   <div class="cart__item__content__settings__quantity">
 //     <p>Qté : </p>
@@ -80,6 +78,7 @@ function createItemContentSettingsElement(parentElement, cartItem) {
   settingsDeleteElement.appendChild(pDeleteElement);
 }
 
+// construit la partie du DOM qui suit: (le Node "div" avec class="cart__item__img")
 // <div class="cart__item__img">
 //   <img src=${imageUrl} alt=${altTxt}>
 // </div>
@@ -94,6 +93,7 @@ function createItemImgElement(parentElement, cartItem) {
   itemImgElement.appendChild(imgElement);
 }  
  
+// construit la partie du DOM qui suit: (le Node "div" avec class="cart__item__content__description")
 // <div class="cart__item__content__description">
 //   <h2>${name}</h2>
 //   <p>${color}</p>
@@ -116,6 +116,7 @@ function createItemImgElement(parentElement, cartItem) {
     itemContentDescriptionElement.appendChild(pPriceElement);
   }
 
+  // construit la partie du DOM qui suit: (le Node "div" avec class="cart__item__content__description")
   // <article class="cart__item" data-id="${productId}" data-color="${color}">
   // </article>
   function createArticleElement(parentElement, cartItem) {  
@@ -133,15 +134,13 @@ function createItemImgElement(parentElement, cartItem) {
     createItemContentSettingsElement(itemContentElement, cartItem);
   }
 
+  // construit le DOM de la page Cart (insere les produits, calcule le numero des elements et le total de la commande )
   function showCart() {
-    //cartProducts = [];
-    totalPrice=0;
-    totalQuantity=0;
-
+    let totalPrice=0;
+    let totalQuantity=0;
     const storedCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
     //console.log(storedCart);
     //console.log(allProducts);
-    let cartContent = "";
     storedCart.forEach((product) => {
         //console.log(product);
         const {productId, color, quantity} = product;
@@ -162,6 +161,7 @@ function createItemImgElement(parentElement, cartItem) {
     document.querySelectorAll(".deleteItem").forEach(deleteButton=>deleteButton.addEventListener("click", deleteProductHandler));
 }
 
+// met à jour le localStorage après une modification de quantité d'un produit dans le panier 
 function updateProductCart(productId, color, newQuantity) {
     const oldCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
     const indexProduct = oldCart.findIndex(value => value.productId === productId && value.color === color);
@@ -170,16 +170,17 @@ function updateProductCart(productId, color, newQuantity) {
     localStorage.setItem("Kanap-OC", JSON.stringify(oldCart));
 }
 
+// met à jour le localStorage après la suppression d'un produit dans le panier 
 function deleteProductFromCart(productIdToDelete, colorToDelete) {
     const existingCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
     const newCart = existingCart.filter(product=>{ 
         const {productId, color} = product;
         return !(productId === productIdToDelete && color === colorToDelete);
-    });
-   
+    }); 
     localStorage.setItem("Kanap-OC", JSON.stringify(newCart));
 }
 
+// met à jour la quantité totale après une modification de quantité ou une suppression d'un produit dans le panier 
 function updateTotalQuantity() {
     let totalQuantity = 0;
     let quantities = document.querySelectorAll(".itemQuantity");
@@ -195,6 +196,7 @@ function updateTotalQuantity() {
     document.getElementById("totalQuantity").textContent = totalQuantity;
 }
 
+// met à jour le prix total après une modification de quantité ou une suppression d'un produit dans le panier 
 function updateTotalPrice() {
     let totalPrice = 0;
     const cartProducts = document.querySelectorAll(".cart__item");
@@ -208,8 +210,8 @@ function updateTotalPrice() {
     })
     document.getElementById("totalPrice").textContent =  formatPrice(totalPrice);
 }
-
-//to do : test if newValue is not the same as the old one 
+ 
+// Javascript eventHandler pour la modification de quantité d'un Produit
 function quantityChangeHandler(event) {
     const parentArticle = this.closest(".cart__item");
     //console.log(parentArticle)
@@ -219,6 +221,7 @@ function quantityChangeHandler(event) {
     updateTotalPrice();
 }
 
+// Javascript eventHandler pour la suppression d'un Produit du panier
 function deleteProductHandler() {
     //console.log("deleteProductHandler");
     const parentArticle = this.closest(".cart__item");
@@ -241,35 +244,33 @@ const errorAddress = document.getElementById("addressErrorMsg");
 const cityInput = document.getElementById("city");
 const errorCity = document.getElementById("cityErrorMsg");
 
-//regexp Email
-//const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
-function validateName(name) {
-  //from https://grafikart.fr/forum/29810
-  //const nameRegexp = /^[A-Z][\p{L}-]*$/;
-  //Loïc, Laëtitia
-  const nameRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
-  return nameRegexp.test(name);
-}
+  // fonctions pour la validation des champs du formulaire : nom, (prénom similaire avec le nom), adresse, city 
+  function validateName(name) {
+    const nameRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
+    return nameRegexp.test(name);
+  }
 
-function validateCity(city) {
-  const cityRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
-  return cityRegexp.test(city);
-}
+  function validateCity(city) {
+    const cityRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
+    return cityRegexp.test(city);
+  }
 
-function validateAddress(address) {
-  const addressRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
-  return addressRegexp.test(address);
-}
+  function validateAddress(address) {
+    const addressRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
+    return addressRegexp.test(address);
+  }
 
-emailInput.addEventListener("change", function (event) {
-    if (!emailInput.value || emailInput.validity.valid) {
-      errorEmail.textContent = ""; 
-    }
-    else {
-        errorEmail.textContent = "L'adresse e-mail n'est pas correcte!";
-    }
-  }, false);
+  // fonctions Javascript eventListener paour les champs du formulaire : email, nom, prénom, adresse, city  
+  // utilisées pour la vérification de ces champs 
+  emailInput.addEventListener("change", function (event) {
+      if (!emailInput.value || emailInput.validity.valid) {
+        errorEmail.textContent = ""; 
+      }
+      else {
+          errorEmail.textContent = "L'adresse e-mail n'est pas correcte!";
+      }
+    }, false);
 
 
   firstNameInput.addEventListener("change", function () {
@@ -308,15 +309,17 @@ emailInput.addEventListener("change", function (event) {
     }
   }, false);
 
-function getCartProducts() {
-  const existingCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
-  const idsCart = existingCart.map(product=>{ 
-      const {productId} = product;
-      return productId;
-  });
-   
-  return idsCart;
-}  
+  // construit un array qui contient seulement les id's des Produits qui se trouvent dans le panier,  
+  // array nécessaire pour l'envoie vers le backend 
+  function getCartProducts() {
+    const existingCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
+    const idsCart = existingCart.map(product=>{ 
+        const {productId} = product;
+        return productId;
+    });
+     
+    return idsCart;
+  }  
 
 form.addEventListener("submit", function (event) {
     if (!emailInput.validity.valid 
@@ -343,6 +346,7 @@ form.addEventListener("submit", function (event) {
     event.preventDefault();
 }, false);
 
+// confirmation de la form et redirection vers la page confirmation, avec l'id de la commande en Url
 function submitCart(cart) {
   console.log(JSON.stringify(cart));
   fetch(`${host}/api/products/order`, {
