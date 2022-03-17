@@ -28,7 +28,7 @@ function showAllProducts(products) {
   }
 }
 
-//récupère tous les produits depuis le backend avec une requête Get
+// récupère tous les produits depuis le backend avec une requête Get
 function addProductsList() {
     fetch(`${host}/api/products`)
     .then(function(response) {
