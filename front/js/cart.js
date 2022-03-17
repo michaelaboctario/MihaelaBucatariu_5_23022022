@@ -252,12 +252,12 @@ const errorCity = document.getElementById("cityErrorMsg");
   }
 
   function validateCity(city) {
-    const cityRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
+    const cityRegexp =  /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
     return cityRegexp.test(city);
   }
 
   function validateAddress(address) {
-    const addressRegexp = /^[A-Z][A-Za-z\é\è\ê\î\ï\ë\-]+$/;
+    const addressRegexp = /[0-9]* ([a-zA-Z\é\è\ê\î\ï\ë\-]*)/;
     return addressRegexp.test(address);
   }
 
@@ -346,7 +346,8 @@ form.addEventListener("submit", function (event) {
     event.preventDefault();
 }, false);
 
-// confirmation de la form et redirection vers la page confirmation, avec l'id de la commande en Url
+// envoie la commande et redirige vers la page confirmation, avec l'id de la commande en Url
+// vide le localStorage
 function submitCart(cart) {
   console.log(JSON.stringify(cart));
   fetch(`${host}/api/products/order`, {
@@ -364,6 +365,7 @@ function submitCart(cart) {
   })
   .then(function(data) {
     //console.log(data);
+    localStorage.clear();
     window.location.replace(`confirmation.html?order=${data.orderId}`);
   });
 }
