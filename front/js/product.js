@@ -1,4 +1,4 @@
-import { host } from './config.js';
+"use strict"
 
 // récupère l'id du produit, à partir de l'Url du navigateur 
 function getProductId()
@@ -39,7 +39,7 @@ function showOneProduct(product) {
   button.onclick = clickAddToChartHandler;
 }
 
-
+// Javascript handler pour le click sur le button "addToCart" 
 function clickAddToChartHandler() {
   const productId = getProductId();
   const quantity = Number(document.getElementById("quantity").value);
@@ -74,7 +74,7 @@ function addToCart(itemToAdd) {
 
 // récupère le produit avec l'id passé en paramètre, et construit la DOM de la page Produit pour ce Produit 
 function addOneProduct(productId) {
-    fetch(`${host}/api/products/${productId}`)
+    fetch(`http://localhost:3000/api/products/${productId}`)
     .then(function(response) {
         //console.log(response);
         if(response.ok) {

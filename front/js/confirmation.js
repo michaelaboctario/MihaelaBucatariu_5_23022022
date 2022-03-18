@@ -1,3 +1,5 @@
+"use strict"
+
 // insére le numéro de commande sur la page de confirmation
 const orderId = document.getElementById("orderId");
 orderId.textContent = getOrderId();

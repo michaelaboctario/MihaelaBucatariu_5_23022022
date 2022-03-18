@@ -1,9 +1,9 @@
-import { host} from './config.js';
+"use strict"
 
 let allProducts=[];
 
 function getProductsList() {
-    fetch(`${host}/api/products`)
+    fetch("http://localhost:3000/api/products")
     .then(function(response) {
         //console.log(response);
         if(response.ok) {
@@ -327,7 +327,8 @@ form.addEventListener("submit", function (event) {
       || !validateName(firstNameInput.value)
       || !validateName(lastNameInput.value)
       || !validateCity(cityInput.value)
-      || !validateAddress(firstNameInput.value)) {    
+      || !validateAddress(addressInput.value)) {    
+        alert("Il y des erreurs dans le formulaire !")
     }
     else {
       const contact = {
@@ -351,7 +352,7 @@ form.addEventListener("submit", function (event) {
 // vide le localStorage
 function submitCart(cart) {
   console.log(JSON.stringify(cart));
-  fetch(`${host}/api/products/order`, {
+  fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: {
       'Accept': 'application/json', 

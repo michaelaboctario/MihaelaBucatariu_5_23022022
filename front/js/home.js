@@ -1,4 +1,4 @@
-import { host } from './config.js';
+"use strict"
 
 //construit le DOM de la page d'accueil, a partir des produits déjà existent en format json récupères précédemment 
 function showAllProducts(products) {
@@ -30,7 +30,7 @@ function showAllProducts(products) {
 
 // récupère tous les produits depuis le backend avec une requête Get
 function addProductsList() {
-    fetch(`${host}/api/products`)
+    fetch("http://localhost:3000/api/products")
     .then(function(response) {
         //console.log(response);
         if(response.ok) {
