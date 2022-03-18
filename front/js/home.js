@@ -4,7 +4,6 @@
 function showAllProducts(products) {
   const itemsElement = document.getElementById("items");
   for(let product of products) {
-      //console.log(product);
       const {_id, imageUrl, name, description, altTxt} = product; 
       
       const productElement = document.createElement("a");
@@ -32,17 +31,13 @@ function showAllProducts(products) {
 function addProductsList() {
     fetch("http://localhost:3000/api/products")
     .then(function(response) {
-        //console.log(response);
         if(response.ok) {
-          const res = response.json()
-          //console.log(res);
-          return res;
+          return response.json();
         } else {
           console.log('Mauvaise réponse du réseau');
         }
       })
       .then( function(response) {
-         //console.log(response);
          showAllProducts(response);
       })
       .catch(function(error) {

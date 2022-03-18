@@ -8,14 +8,12 @@ function getProductId()
   const search_params = new URLSearchParams(url.search); 
   if(search_params.has('id')) {
     productId = search_params.get('id');
-    //console.log(productId);
   } 
   return productId;
 }
 
 // construit le DOM d'un Produit, envoyé en paramètre, en format json 
 function showOneProduct(product) {     
-  //console.log(product);
   const {_id, price, colors, imageUrl, name, description, altTxt} = product; 
   
   const imageProduct = document.createElement("img");
@@ -49,7 +47,6 @@ function clickAddToChartHandler() {
           color
         };
   if (color !== "" && quantity > 0 && quantity <= 100) {
-    //console.log("click addToCart but");
     addToCart(itemToAdd);
     window.location.href = "cart.html";
   }
@@ -76,17 +73,13 @@ function addToCart(itemToAdd) {
 function addOneProduct(productId) {
     fetch(`http://localhost:3000/api/products/${productId}`)
     .then(function(response) {
-        //console.log(response);
         if(response.ok) {
-          const res = response.json()
-          //console.log(res);
-          return res;
+          return response.json();
         } else {
           console.log('Mauvaise réponse du réseau');
         }
       })
       .then( function(response) {
-         //console.log(response);
          showOneProduct(response);
       })
       .catch(function(error) {
@@ -96,7 +89,6 @@ function addOneProduct(productId) {
 
 // construit la page Produit
 window.onload = function() {
-  //console.log(host);
   const productId = getProductId();
   if(productId)
     addOneProduct(productId);

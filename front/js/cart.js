@@ -5,17 +5,13 @@ let allProducts=[];
 function getProductsList() {
     fetch("http://localhost:3000/api/products")
     .then(function(response) {
-        //console.log(response);
         if(response.ok) {
-          const res = response.json()
-          //console.log(res);
-          return res;
+          return response.json();
         } else {
           console.log('Mauvaise réponse du réseau');
         }
       })
       .then( function(response) {
-         //console.log(response);
          allProducts = response.slice();
          showCart();
       })
@@ -139,13 +135,9 @@ function createItemImgElement(parentElement, cartItem) {
     let totalPrice=0;
     let totalQuantity=0;
     const storedCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
-    //console.log(storedCart);
-    //console.log(allProducts);
     storedCart.forEach((product) => {
-        //console.log(product);
         const {productId, color, quantity} = product;
         const item = allProducts.find(product => product._id === productId);
-        //console.log(item);
         if(item)
         {
           const {name, price, imageUrl, altTxt} = item;
@@ -188,7 +180,6 @@ function updateTotalQuantity() {
         console.log(quantities);
         quantities.forEach(el=>{
             totalQuantity = totalQuantity + Number(el.value);
-            //console.log(totalQuantity);
         });
            
     }
@@ -214,7 +205,6 @@ function updateTotalPrice() {
 // Javascript eventHandler pour la modification de quantité d'un Produit
 function quantityChangeHandler(event) {
     const parentArticle = this.closest(".cart__item");
-    //console.log(parentArticle)
     const newQuantity = event.target.value;
     updateProductCart(parentArticle.dataset.id, parentArticle.dataset.color, newQuantity);
     updateTotalQuantity();
@@ -223,9 +213,7 @@ function quantityChangeHandler(event) {
 
 // Javascript eventHandler pour la suppression d'un Produit du panier
 function deleteProductHandler() {
-    //console.log("deleteProductHandler");
     const parentArticle = this.closest(".cart__item");
-    //console.log(parentArticle)
     deleteProductFromCart(parentArticle.dataset.id, parentArticle.dataset.color);
     parentArticle.remove();
     updateTotalQuantity();
@@ -257,7 +245,6 @@ const errorCity = document.getElementById("cityErrorMsg");
   }
 
   function validateAddress(address) {
-    //const addressRegexp = /[0-9]* ([a-zA-Z\é\è\ê\î\ï\ë\-]*)/;
     const addressRegexp = /[0-9]* [a-zA-Z\é\è\ê\î\ï\ë\-]*/;
     return addressRegexp.test(address);
   }
@@ -342,7 +329,6 @@ form.addEventListener("submit", function (event) {
         contact,
         products: getCartProducts()
       }
-      console.log(cart);
       submitCart(cart);
     }
     event.preventDefault();
@@ -351,7 +337,6 @@ form.addEventListener("submit", function (event) {
 // envoie la commande et redirige vers la page confirmation, avec l'id de la commande en Url
 // vide le localStorage
 function submitCart(cart) {
-  console.log(JSON.stringify(cart));
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: {
@@ -366,7 +351,6 @@ function submitCart(cart) {
     }
   })
   .then(function(data) {
-    //console.log(data);
     localStorage.clear();
     window.location.replace(`confirmation.html?order=${data.orderId}`);
   });
