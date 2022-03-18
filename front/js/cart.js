@@ -257,7 +257,8 @@ const errorCity = document.getElementById("cityErrorMsg");
   }
 
   function validateAddress(address) {
-    const addressRegexp = /[0-9]* ([a-zA-Z\é\è\ê\î\ï\ë\-]*)/;
+    //const addressRegexp = /[0-9]* ([a-zA-Z\é\è\ê\î\ï\ë\-]*)/;
+    const addressRegexp = /[0-9]* [a-zA-Z\é\è\ê\î\ï\ë\-]*/;
     return addressRegexp.test(address);
   }
 

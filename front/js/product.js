@@ -27,7 +27,6 @@ function showOneProduct(product) {
   document.getElementById("description").textContent=description;
 
   const colorsElement =  document.getElementById("colors");
-  colorsElement.remove(colorsElement.firstChild);
   for(let color of colors) {
     const colorOption = document.createElement("option");
     colorOption.setAttribute("value", color);
@@ -37,38 +36,47 @@ function showOneProduct(product) {
   document.getElementById("quantity").value="1";
 
   const button = document.getElementById("addToCart")  
-  button.onclick = function() {
-    //console.log("click addToCart but");
-    addToCart();
-    window.location.href = "cart.html";
-  }; 
+  button.onclick = clickAddToChartHandler;
 }
+
+
+function clickAddToChartHandler() {
+  const productId = getProductId();
+  const quantity = Number(document.getElementById("quantity").value);
+  const color = document.getElementById("colors").value;
+  const itemToAdd = {productId,
+          quantity,
+          color
+        };
+  if (color !== "" && quantity > 0 && quantity <= 100) {
+    //console.log("click addToCart but");
+    addToCart(itemToAdd);
+    window.location.href = "cart.html";
+  }
+  else {
+    alert("Veuillez sélectionner une couleur et indiquer la quantité souhaitée. Attention, la quantité maximale est fixée à 100 articles.");
+  }
+}; 
 
 // ajout d'un Produit dans le Panier, en respectant la quantité et la couleur sélectionnées 
 // si le même Produit se trouve déjà dans le Panier (même id et même couleur), calcule la nouvelle quantité, ne duplique pas le même Produit 
 // sauvegarde le panier dans le localStorage 
-function addToCart() {
-    const productId = getProductId();
-    const quantity = Number(document.getElementById("quantity").value);
-    const color = document.getElementById("colors").value;
-    const itemToAdd = { productId,
-                      quantity,
-                      color
-                    }
-    const oldCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
-    const indexProduct = oldCart.findIndex(value => value.productId === productId && value.color === color);
-    if ( indexProduct >= 0)
-      oldCart[indexProduct].quantity = Number(oldCart[indexProduct].quantity)+Number(quantity);
-    else
-      oldCart.push(itemToAdd);
-    localStorage.setItem("Kanap-OC", JSON.stringify(oldCart));
+function addToCart(itemToAdd) {
+  const {productId, quantity, color} = itemToAdd;
+  const oldCart = JSON.parse(localStorage.getItem("Kanap-OC"))||[];
+  const indexProduct = oldCart.findIndex(value => value.productId === productId && value.color === color);
+  if ( indexProduct >= 0)
+    oldCart[indexProduct].quantity = Number(oldCart[indexProduct].quantity)+Number(quantity);
+  else
+    oldCart.push(itemToAdd);
+  localStorage.setItem("Kanap-OC", JSON.stringify(oldCart));
 }
 
 // récupère le produit avec l'id passé en paramètre, et construit la DOM de la page Produit pour ce Produit 
 function addOneProduct(productId) {
     fetch(`${host}/api/products/${productId}`)
     .then(function(response) {
-        console.log(response);
+        //console.log(response);
         if(response.ok) {
           const res = response.json()
           //console.log(res);
@@ -78,7 +86,7 @@ function addOneProduct(productId) {
         }
       })
       .then( function(response) {
-         console.log(response);
+         //console.log(response);
          showOneProduct(response);
       })
       .catch(function(error) {
@@ -88,7 +96,7 @@ function addOneProduct(productId) {
 
 // construit la page Produit
 window.onload = function() {
-  console.log(host);
+  //console.log(host);
   const productId = getProductId();
   if(productId)
     addOneProduct(productId);
