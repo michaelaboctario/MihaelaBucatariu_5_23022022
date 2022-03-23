@@ -177,13 +177,11 @@ function updateTotalQuantity() {
     let totalQuantity = 0;
     let quantities = document.querySelectorAll(".itemQuantity");
     if(quantities.length>0) {
-        console.log(quantities);
         quantities.forEach(el=>{
             totalQuantity = totalQuantity + Number(el.value);
         });
            
     }
-    //console.log(totalQuantity);
     document.getElementById("totalQuantity").textContent = totalQuantity;
 }
 
@@ -245,7 +243,7 @@ const errorCity = document.getElementById("cityErrorMsg");
   }
 
   function validateAddress(address) {
-    const addressRegexp = /[0-9]* [a-zA-Z\é\è\ê\î\ï\ë\-]*/;
+    const addressRegexp = /[0-9]* [a-zA-Z\é\è\ê\î\ï\ë\-]+$/;
     return addressRegexp.test(address);
   }
 
